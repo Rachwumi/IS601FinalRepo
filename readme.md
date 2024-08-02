@@ -8,21 +8,21 @@
 1. [**Closed Issues**](https://github.com/Rachwumi/IS601FinalRepo/issues?q=is%3Aissue+is%3Aclosed)
 
 2. **New Tests**
-    - Test_user_model
+    - [Test_user_model](https://github.com/Rachwumi/IS601FinalRepo/blob/main/tests/test_models/test_user_model.py)
         - test_update_professional_status
-    - Test_user_service
+    - [Test_user_service](https://github.com/Rachwumi/IS601FinalRepo/blob/main/tests/test_services/test_user_service.py)
         - test_check_eligibility_unsuccessful
         - test_check_eligibility_successful
         - test_request_pro_status_successful
         - test_update_pro_status_unsuccessful
         - test_update_pro_status_successful
-    - Test_users_api
+    - [Test_users_api](https://github.com/Rachwumi/IS601FinalRepo/blob/main/tests/test_api/test_users_api.py)
         - test_request_pro_status_unauthorized
         - test_update_profile_unauthorized
         - test_upgrade_pro_status_unauthorized
         - test_upgrade_pro_status_authorized
         - test_request_pro_status_authorized
-    - Test_user_schemas
+    - [Test_user_schemas](https://github.com/Rachwumi/IS601FinalRepo/blob/main/tests/test_schemas/test_user_schemas.py)
         - test_user_linkedin_url_valid
         - test_user_linkedin_url_invalid
         - test_user_github_url_valid
