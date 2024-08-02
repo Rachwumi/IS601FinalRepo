@@ -5,7 +5,7 @@
 
 ## Submission📝✏️📈
 
-1. **Closed Issues**
+1. [**Closed Issues**](https://github.com/Rachwumi/IS601FinalRepo/issues?q=is%3Aissue+is%3Aclosed)
 
 2. **New Tests**
     - Test_user_model
@@ -31,10 +31,14 @@
         - test_password_too_long
         - test_password_format_valid
         - test_password_format_invalid
-3. **New Feature**
+3. [**New Feature**](https://github.com/Rachwumi/IS601FinalRepo/tree/user-profile-feature)
+
+<img width="1176" alt="Screenshot 2024-08-02 044052" src="https://github.com/user-attachments/assets/5344d8be-20ae-42d3-8521-c47f1ee5812a">
 
 ## Reflection Paper
 
-## Docker Hub Image 
+## [Docker Hub Image](https://hub.docker.com/repository/docker/rachealogungbile2024/is601final/general) 
+
+<img width="1007" alt="Screenshot 2024-08-02 044052" src="https://github.com/user-attachments/assets/000b10d6-76d6-4fe5-905b-84b6531392c3">
 
 ## Conclusion
