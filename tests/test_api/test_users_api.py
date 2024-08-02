@@ -1,3 +1,4 @@
+import os
 from builtins import str
 import pytest
 from httpx import AsyncClient
@@ -10,6 +11,8 @@ from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
+os.environ['PYTHON_ENV'] = 'test'
+
 
 # Example of a test function using the async_client fixture
 @pytest.mark.asyncio
