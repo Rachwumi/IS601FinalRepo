@@ -144,6 +144,7 @@ async def eligible_user(db_session):
         "hashed_password": hash_password("MySuperPassword$1234"),
         "role": UserRole.AUTHENTICATED,
         "email_verified": False,
+        "requested_pro_status": False,
         "is_locked": False,
     }
     user = User(**user_data)

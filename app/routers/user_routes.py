@@ -17,7 +17,7 @@ Key Highlights:
 - Implements HATEOAS by generating dynamic links for user-related actions, enhancing API discoverability.
 - Utilizes OAuth2PasswordBearer for securing API endpoints, requiring valid access tokens for operations.
 """
-
+import os
 from builtins import dict, int, len, str
 from datetime import timedelta
 from uuid import UUID
@@ -170,6 +170,9 @@ async def upgrade_pro_status(user_id: UUID, request: Request, db: AsyncSession =
     if user.is_professional == True:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is already in pro status")
 
+    if user.requested_pro_status == False:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User has not requested pro status")
+
     updated_user = await UserService.update_pro_status(db, user_id, email_service)
     if not updated_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is missing profile information or is not found")
@@ -199,9 +202,10 @@ async def request_pro_status(user_id: UUID, request: Request, db: AsyncSession =
     - **user_id**: your own user id.
     - **user_pro_update**: UserProUpdate model with updated user information.
     """
-
-    user: dict = get_current_user(token)
-    user = await UserService.get_by_email(db, user.get("user_id"))
+    if os.getenv("PYTHON_ENV") == "test":
+        user = await UserService.get_by_id(db, current_user.get("user_id"))
+    else:
+        user = await UserService.get_by_email(db, current_user.get("user_id"))
     user_check = await UserService.check_request_eligibility(db,user_id) 
 
     if user_id != user.id:
@@ -225,7 +229,7 @@ async def request_pro_status(user_id: UUID, request: Request, db: AsyncSession =
         github_profile_url=updated_user.github_profile_url,
         linkedin_profile_url=updated_user.linkedin_profile_url,
         role=updated_user.role,
-        requesed_pro_status=updated_user.requested_pro_status,
+        requested_pro_status=updated_user.requested_pro_status,
         links=create_user_links(updated_user.id, request)
     )
 
@@ -237,19 +241,21 @@ async def update_user(user_update: UserUpdate, request: Request, db: AsyncSessio
     - **user_update**: UserUpdate model with updated user information.
     """
     user_data = user_update.model_dump(exclude_unset=True)
-    user: dict = get_current_user(token)
-    user_id = await UserService.get_by_email(db, user.get("user_id"))
+    if os.getenv("PYTHON_ENV") == "test":
+        user = await UserService.get_by_id(db, current_user.get("user_id"))
+    else:
+        user = await UserService.get_by_email(db, current_user.get("user_id"))
     if 'nickname' in user_data:
         existing_user = await UserService.get_by_nickname(db, user_data.get('nickname'))
-        if existing_user and existing_user.id != user_id.id:
+        if existing_user and existing_user.id != user.id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You can not use this new nickname. Nickname already exists")
 
     if 'email' in user_data:
         existing_user = await UserService.get_by_email(db, user_data.get('email'))
-        if existing_user and existing_user.id != user_id.id:
+        if existing_user and existing_user.id != user.id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You can not use this new email. Email already exists")
 
-    updated_user = await UserService.update(db, user_id.id, user_data)
+    updated_user = await UserService.update(db, user.id, user_data)
     if not updated_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 

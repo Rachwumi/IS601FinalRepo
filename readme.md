@@ -11,8 +11,10 @@
     - [Test_user_model](https://github.com/Rachwumi/IS601FinalRepo/blob/main/tests/test_models/test_user_model.py)
         - test_update_professional_status
     - [Test_user_service](https://github.com/Rachwumi/IS601FinalRepo/blob/main/tests/test_services/test_user_service.py)
-        - test_check_eligibility_unsuccessful
-        - test_check_eligibility_successful
+        - test_check_request_eligibility_unsuccessful
+        - test_check_request_eligibility_successful
+        - test_check_update_eligibility_unsuccessful
+        - test_check_update_eligibility_successful
         - test_request_pro_status_successful
         - test_update_pro_status_unsuccessful
         - test_update_pro_status_successful
@@ -22,6 +24,7 @@
         - test_upgrade_pro_status_unauthorized
         - test_upgrade_pro_status_authorized
         - test_request_pro_status_authorized
+        - test_update_profile_authorized
     - [Test_user_schemas](https://github.com/Rachwumi/IS601FinalRepo/blob/main/tests/test_schemas/test_user_schemas.py)
         - test_user_linkedin_url_valid
         - test_user_linkedin_url_invalid
@@ -36,7 +39,7 @@
 <img width="1176" alt="Screenshot 2024-08-02 044052" src="https://github.com/user-attachments/assets/5344d8be-20ae-42d3-8521-c47f1ee5812a">
 
 ## Reflection Paper
-
+[IS601 Final Reflection R.Ogungbile.docx](https://github.com/user-attachments/files/16472368/IS601.Final.Reflection.R.Ogungbile.docx)
 ## [Docker Hub Image](https://hub.docker.com/repository/docker/rachealogungbile2024/is601final/general) 
 
 <img width="1007" alt="Screenshot 2024-08-02 044052" src="https://github.com/user-attachments/assets/000b10d6-76d6-4fe5-905b-84b6531392c3">

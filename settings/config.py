@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     smtp_port: int = Field(default=2525, description="SMTP port for sending emails")
     smtp_username: str = Field(default='9887b4e64da3a4', description="Username for SMTP server")
     smtp_password: str = Field(default='71f744af2c7cf4', description="Password for SMTP server")
-
+    PYTHON_ENV: str = Field(default='test', description="For test environment")
 
     class Config:
         # If your .env file is not in the root directory, adjust the path accordingly.

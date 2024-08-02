@@ -6,6 +6,10 @@ from app.models.user_model import User, UserRole
 from app.utils.nickname_gen import generate_nickname
 from app.utils.security import hash_password
 from app.services.jwt_service import decode_token  # Import your FastAPI app
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Example of a test function using the async_client fixture
 @pytest.mark.asyncio
@@ -200,13 +204,20 @@ async def test_request_pro_status_unauthorized(async_client, admin_token, admin_
 
 @pytest.mark.asyncio
 async def test_request_pro_status_authorized(async_client, eligible_user, eligible_user_token):
+    form_data = {
+        "username": eligible_user.email,
+        "password": "MySuperPassword$1234"
+    }
+    response = await async_client.post("/login/", data=urlencode(form_data), headers={"Content-Type": "application/x-www-form-urlencoded"})
     response = await async_client.put(
         f"/user/request/{eligible_user.id}", headers={"Authorization": f"Bearer {eligible_user_token}"}
     )
-    assert response.status_code == 200  
+    assert response.status_code == 200
+    assert response.json()["requested_pro_status"] == True 
 
 @pytest.mark.asyncio
 async def test_upgrade_pro_status_authorized(async_client, admin_user, eligible_user, admin_token):
+    eligible_user.requested_pro_status = True
     response = await async_client.put(f"/users/status/{eligible_user.id}",headers={"Authorization": f"Bearer {admin_token}"})
     assert response.status_code == 200  
 
@@ -220,3 +231,18 @@ async def test_update_profile_unauthorized(async_client, admin_user, admin_token
     response = await async_client.put(f"/user/{admin_user.id}",headers={"Authorization": f"Bearer {admin_token}"})
     assert response.status_code == 403  # Forbidden, as expected for regular user
  
+@pytest.mark.asyncio
+async def test_update_profile_authorized(async_client, eligible_user, eligible_user_token):
+    json_data= {
+        "bio": "I'm him"
+    }
+    form_data = {
+        "username": eligible_user.email,
+        "password": "MySuperPassword$1234"
+    }
+    response = await async_client.post("/login/", data=urlencode(form_data), headers={"Content-Type": "application/x-www-form-urlencoded"})
+    response = await async_client.put(
+        f"/user/{eligible_user.id}", json=json_data, headers={"Authorization": f"Bearer {eligible_user_token}"}
+    )
+    assert response.status_code == 200  
+    assert response.json()["bio"] == "I'm him"
