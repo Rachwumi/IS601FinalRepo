@@ -73,9 +73,7 @@ class UserService:
             new_user.role = UserRole.ADMIN if user_count == 0 else UserRole.ANONYMOUS            
             if new_user.role == UserRole.ADMIN:
                 new_user.email_verified = True
-
-            else:
-                new_user.verification_token = generate_verification_token()
+            new_user.verification_token = generate_verification_token()
             session.add(new_user)
             await session.commit()
             await email_service.send_verification_email(new_user)
@@ -110,7 +108,7 @@ class UserService:
         try:
             updated_user = await cls.get_by_id(session, user_id)
             # validated_data = UserUpdate(**update_data).dict(exclude_unset=True)
-            if await cls.check_eligibility( session, user_id) == True:
+            if await cls.check_update_eligibility( session, user_id) == True:
                 updated_user.is_professional = True
                 updated_user.professional_status_updated_at = func.now()
             else:
@@ -211,7 +209,15 @@ class UserService:
         return user.is_locked if user else False
 
     @classmethod
-    async def check_eligibility(cls, session: AsyncSession, id: str) -> bool:
+    async def check_request_eligibility(cls, session: AsyncSession, id: str) -> bool:
+        user = await cls.get_by_id(session, id)
+        if user.linkedin_profile_url != '' and user.github_profile_url != '' and user.profile_picture_url != '' and user.bio != '' and user.requested_pro_status == False:
+            return True
+        else:
+            return False
+
+    @classmethod
+    async def check_update_eligibility(cls, session: AsyncSession, id: str) -> bool:
         user = await cls.get_by_id(session, id)
         if user.linkedin_profile_url != '' and user.github_profile_url != '' and user.profile_picture_url != '' and user.bio != '' and user.is_professional == False:
             return True

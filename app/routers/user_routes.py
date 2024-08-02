@@ -74,8 +74,9 @@ async def get_user(user_id: UUID, request: Request, db: AsyncSession = Depends(g
 @router.get("/user/{user_id}", response_model=UserResponse, name="display_user_profile", tags=["User Profile Management"])
 async def get_user(request: Request, db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme), current_user: dict = Depends(require_role(["AUTHENTICATED", "ADMIN", "MANAGER"]))):
     """
-    Endpoint to fetch a user by their unique identifier (UUID).
+    Endpoint to fetch a user by who the current signed in user is.
 
+    Utilizies the Dependencies to get the information of the currently signed in user.
     Utilizes the UserService to query the database asynchronously for the user and constructs a response
     model that includes the user's details along with HATEOAS links for possible next actions.
 
@@ -160,14 +161,18 @@ async def update_user(user_id: UUID, user_update: UserUpdate, request: Request, 
 @router.put("/users/status/{user_id}", response_model=UserResponse, name="update_user_pro_status", tags=["User Management Requires (Admin or Manager Roles)"])
 async def upgrade_pro_status(user_id: UUID, request: Request, db: AsyncSession = Depends(get_db), email_service: EmailService = Depends(get_email_service), token: str = Depends(oauth2_scheme), current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))):
     """
-    Update user profile information.
+    Update a user's pro status. Please provide the UUID so that their status can be updated apprpriately.
 
     - **user_id**: UUID of the user to update their pro status.
      """
+    
+    user = await UserService.get_by_id(db, user_id)
+    if user.is_professional == True:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is already in pro status")
 
     updated_user = await UserService.update_pro_status(db, user_id, email_service)
     if not updated_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User is missing profile information or is not found")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is missing profile information or is not found")
 
     return UserResponse.model_construct(
         id=updated_user.id,
@@ -176,6 +181,9 @@ async def upgrade_pro_status(user_id: UUID, request: Request, db: AsyncSession =
         last_name=updated_user.last_name,
         nickname=updated_user.nickname,
         email=updated_user.email,
+        profile_picture_url=updated_user.profile_picture_url,
+        github_profile_url=updated_user.github_profile_url,
+        linkedin_profile_url=updated_user.linkedin_profile_url,
         role=updated_user.role,
         updated_at=updated_user.updated_at,
         is_professional=updated_user.is_professional,
@@ -188,16 +196,23 @@ async def request_pro_status(user_id: UUID, request: Request, db: AsyncSession =
     """
     Update user profile information.
 
-    - **user_id**: UUID of the user to update.
+    - **user_id**: your own user id.
     - **user_pro_update**: UserProUpdate model with updated user information.
     """
-    user_check = await UserService.check_eligibility(db,user_id) 
+
+    user: dict = get_current_user(token)
+    user = await UserService.get_by_email(db, user.get("user_id"))
+    user_check = await UserService.check_request_eligibility(db,user_id) 
+
+    if user_id != user.id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="UUID does not match the user that is logged in")
+
     if user_check == False:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is not eligible for pro status")
 
     updated_user = await UserService.request_pro_status(db, user_id, email_service)
     if not updated_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found, or has already requested for pro status")
 
     return RequestResponse.model_construct(
         id=updated_user.id,
@@ -206,21 +221,23 @@ async def request_pro_status(user_id: UUID, request: Request, db: AsyncSession =
         last_name=updated_user.last_name,
         nickname=updated_user.nickname,
         email=updated_user.email,
+        profile_picture_url=updated_user.profile_picture_url,
+        github_profile_url=updated_user.github_profile_url,
+        linkedin_profile_url=updated_user.linkedin_profile_url,
         role=updated_user.role,
-        request_pro_status=updated_user.requested_pro_status,
+        requesed_pro_status=updated_user.requested_pro_status,
         links=create_user_links(updated_user.id, request)
     )
 
 @router.put("/user/{user_id}", response_model=UserResponse, name="update_profile", tags=["User Profile Management"])
 async def update_user(user_update: UserUpdate, request: Request, db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme), current_user: dict = Depends(require_role(["AUTHENTICATED"]))):
     """
-    Update user profile information.
+    Update user profile information. Please get the profile information from your profile before updating your user information.
 
     - **user_update**: UserUpdate model with updated user information.
     """
     user_data = user_update.model_dump(exclude_unset=True)
     user: dict = get_current_user(token)
-    print(user.get("user_id"))
     user_id = await UserService.get_by_email(db, user.get("user_id"))
     if 'nickname' in user_data:
         existing_user = await UserService.get_by_nickname(db, user_data.get('nickname'))
