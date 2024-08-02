@@ -42,3 +42,5 @@
 <img width="1007" alt="Screenshot 2024-08-02 044052" src="https://github.com/user-attachments/assets/000b10d6-76d6-4fe5-905b-84b6531392c3">
 
 ## Conclusion
+
+IS601 was an eye opening experience full of hardship and uncomfortablility. I enjoyed being challenged to my fullest extent, with having to learn and apply new concepts; Meanwhile, I got the chance to see how applications and software development is built from the ground up.
