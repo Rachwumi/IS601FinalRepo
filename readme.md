@@ -43,7 +43,7 @@
 
 ## [Docker Hub Image](https://hub.docker.com/repository/docker/rachealogungbile2024/is601final/general) 
 
-<img width="1007" alt="Screenshot 2024-08-02 044052" src="https://github.com/user-attachments/assets/000b10d6-76d6-4fe5-905b-84b6531392c3">
+<img width="968" alt="Screenshot 2024-08-02 132748" src="https://github.com/user-attachments/assets/2a652d9c-66c5-4f3d-a943-179788a68df0">
 
 ## Conclusion
 
